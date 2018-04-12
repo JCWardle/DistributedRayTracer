@@ -22,6 +22,7 @@ defmodule RayTracer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:math, "~> 0.3.0"}
     ]
   end
 end
