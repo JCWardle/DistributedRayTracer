@@ -31,4 +31,8 @@ defmodule Vector3 do
     defp square(a) do
         a * a
     end
+
+    def dot(a, b) do
+        a.x * b.x + a.y * b.y + a.z * b.z
+    end
 end

@@ -14,6 +14,7 @@ defmodule RayTracer.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      applications: [:mogrify_draw],
       mod: {RayTracer, []},
       extra_applications: [:logger]
     ]
@@ -22,7 +23,8 @@ defmodule RayTracer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:math, "~> 0.3.0"}
+      {:math, "~> 0.3.0"},
+      {:mogrify_draw, "~> 0.1.0"}
     ]
   end
 end
