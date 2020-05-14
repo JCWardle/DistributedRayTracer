@@ -19,7 +19,7 @@ defmodule Sphere do
         else
             t1 = (-k2 + :math.sqrt(discriminant)) / (2 * k1)
             t2 = (k2 - :math.sqrt(discriminant)) / (2 * k1)
-            {t1,t2}
+            {t1, t2}
         end
     end
 end

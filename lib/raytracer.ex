@@ -29,7 +29,11 @@ defmodule RayTracer do
         models: [ %Sphere {
             position: %Vector3{ x: 0, y: 0, z: 1000 },
             radius: 250,
-            colour: %Colour{ r: 50, g: 50, b: 133 }
+            colour: %Colour{ r: 50, g: 50, b: 133 },
+        }, %Plane {
+            position: %Vector3{x: 0, y: 0, z: 900},
+            angle: %Vector3{x: 0, y: 0, z: 1},
+            colour: %Colour{r: 255, b: 0, g: 255}
         } ]
     }
   end
@@ -46,6 +50,24 @@ defmodule RayTracer do
     Vector3.subtract(view_point, camera_position)
   end
 
+  def check(%Plane{} = plane, camera_position, ray_direction) do
+    [%{:intersection => Plane.check_collision(plane, camera_position, ray_direction), 
+      :colour => plane.colour}]
+  end
+
+  def check(%Sphere{} = sphere, camera_position, ray_direction) do
+    case Sphere.check_collision(sphere, camera_position, ray_direction) do
+      {t1, t2} -> [%{:intersection => t1, 
+        :colour => sphere.colour},
+          %{:intersection => t2,
+        :colour => sphere.colour}]
+      nil ->
+        nil
+    end
+    
+
+  end
+
   def scan_frame(scene, {canvas_width, canvas_height}) do
     for canvas_x <- Kernel.trunc(-canvas_width / 2).. Kernel.trunc(canvas_width / 2),
         canvas_y <- Kernel.trunc(-canvas_height / 2).. Kernel.trunc(canvas_height / 2) do
@@ -60,11 +82,27 @@ defmodule RayTracer do
             camera.view_distance)
           ray_direction = get_ray_direction(view_port_vector, camera.position)
 
-          sphere = Enum.at(scene.models,0)
-          case Sphere.check_collision(sphere, camera.position, ray_direction) do
-            {a,b} -> Pixel.new(canvas_x, canvas_y, sphere.colour)
-            nil -> Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
+          results = Enum.map(scene.models, fn(model) ->
+            check(model, camera.position, ray_direction)
+          end)
+          |> Enum.reject(fn(result) -> 
+            result == nil #Remove items that didn't intersect
+          end)
+          |> Enum.concat()
+          
+          if(Enum.count(results) == 0) do
+              Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
+            else
+              if(Enum.count(results) > 1) do
+                IO.inspect results  
+              end
+              
+              closestPoint = Enum.max_by(results, fn (result) -> 
+                result.intersection
+              end)
+              Pixel.new(canvas_x, canvas_y, closestPoint.colour)
           end
+          
     end
   end
 
