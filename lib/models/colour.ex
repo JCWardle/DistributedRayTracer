@@ -7,4 +7,8 @@ defmodule Colour do
         
         %Colour{ r: r, g: g, b: b }
     end
+    
+    def to_binary(%Colour{} = colour) do
+        <<colour.r, colour.g, colour.b>>
+    end
 end

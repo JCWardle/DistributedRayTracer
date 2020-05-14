@@ -6,4 +6,5 @@ defmodule Pixel do
     def new(x,y,colour) do
         %Pixel{ x: x, y: y, colour: colour }
     end
+
 end

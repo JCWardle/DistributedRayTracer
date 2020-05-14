@@ -63,7 +63,7 @@ defmodule RayTracer do
           sphere = Enum.at(scene.models,0)
           case Sphere.check_collision(sphere, camera.position, ray_direction) do
             {a,b} -> Pixel.new(canvas_x, canvas_y, sphere.colour)
-            nil -> Pixel.new(canvas_x, canvas_y, scene.colour.background_color)
+            nil -> Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
           end
     end
   end
