@@ -1,3 +1,6 @@
 %{
   "math": {:hex, :math, "0.3.0", "e14e7291115201cb155a3567e66d196bf5088a6f55b030d598107d7ae934a11c", [:mix], [], "hexpm", "5f2a14eeb8ed70b14c2dcd7c09e7e7b61aaa856d1fc0f07f53bf0f3586c561c1"},
+  "mogrify": {:hex, :mogrify, "0.5.6", "8ba04d4204f7149fac4ca302ca37aeb1550074958bed9fa892fdf6cd46806082", [:mix], [], "hexpm", "68636c4f736872b2aa7b176f7820b8fe59ee2a11db688cf845410ce1a0260ab3"},
+  "mogrify_draw": {:hex, :mogrify_draw, "0.1.1", "858e0eb209bad3d408cfce4845e49e049395f2ae80c0802ecf0b0b8c1b954207", [:mix], [{:mogrify, "~> 0.5.4", [hex: :mogrify, repo: "hexpm", optional: false]}], "hexpm", "3f2e05b6cfa8cdef027bbf3ba14a36253694bac7322a0109b5af019b00665238"},
+  "png": {:hex, :png, "0.1.1", "57eeab907d4c2b78d4c3803bc355af025248db9ebd612e4275c3cab65b809171", [:rebar], [], "hexpm", "f8d4a17c118dcc16bb18d0fda6e26947001f9312bc6c061d2236b424fc3dd9ea"},
 }

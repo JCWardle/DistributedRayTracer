@@ -62,8 +62,8 @@ defmodule RayTracer do
 
           sphere = Enum.at(scene.models,0)
           case Sphere.check_collision(sphere, camera.position, ray_direction) do
-            {a,b} -> sphere.colour
-            nil -> scene.camera.background_color
+            {a,b} -> Pixel.new(canvas_x, canvas_y, sphere.colour)
+            nil -> Pixel.new(canvas_x, canvas_y, scene.colour.background_color)
           end
     end
   end
@@ -74,6 +74,6 @@ defmodule RayTracer do
     height = 500
     frame_pixels = scan_frame(scene, {width, height})
     IO.inspect frame_pixels
-    Output.write_to_file("test.ppm", frame_pixels, width, height)
+    Output.write_to_file("output.png", frame_pixels, width, height)
   end
 end

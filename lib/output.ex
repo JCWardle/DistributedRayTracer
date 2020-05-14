@@ -1,12 +1,26 @@
+import Mogrify
+
 defmodule Output do
     def write_to_file(file_name, pixels, width, height) do
-        File.rm(file_name)
-        # {:ok, file} = File.open("test.ppm", [:write, :utf8])
-        pixel_stream = Stream.map(pixels, fn (pixel) ->
-            "#{pixel.r}\t#{pixel.g}\t#{pixel.b}\n"
-        end)
-        Stream.concat(["P3\n#{width}\t#{height}\n255\n"], pixel_stream)
-        |> Stream.into(File.stream!(file_name, [:write, :utf8]))
-        |> Stream.run
+        {:ok, file} = File.open(file_name, [:write])
+        png = :png.create(
+            %{:size => {5, 5}, 
+            :mode => {:rgb, 8}, 
+            :file => file}
+        )
+
+        #Make row
+        row = [<<0,0,0>>,<<0,0,0>>,<<0,0,0>>,<<0,0,0>>,<<0,0,0>>]
+        :png.append(png, {:row, row})
+        row = [<<0,0,0>>,<<0,0,0>>,<<0,0,0>>,<<0,0,0>>,<<0,0,0>>]
+        :png.append(png, {:row, row})
+        row = [<<255,255,255>>,<<255,255,255>>,<<255,255,255>>,<<255,255,255>>,<<255,255,255>>]
+        :png.append(png, {:row, row})
+        row = [<<255,255,255>>,<<255,255,255>>,<<255,255,255>>,<<255,255,255>>,<<255,255,255>>]
+        :png.append(png, {:row, row})
+        row = [<<0,0,0>>,<<0,0,0>>,<<0,0,0>>,<<0,0,0>>,<<0,0,0>>]
+        :png.append(png, {:row, row})
+
+        :png.close(png) 
     end
 end

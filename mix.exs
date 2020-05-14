@@ -24,7 +24,8 @@ defmodule RayTracer.MixProject do
   defp deps do
     [
       {:math, "~> 0.3.0"},
-      {:mogrify_draw, "~> 0.1.0"}
+      {:mogrify_draw, "~> 0.1.0"},
+      {:png, "~> 0.1.1"}
     ]
   end
 end
