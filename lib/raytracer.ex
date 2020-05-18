@@ -25,21 +25,21 @@ defmodule RayTracer do
             view_height: 500,
             view_width: 500
         },
-        light: [],
+        light: [ %AmbientLight{ intensity: 0.5 } ],
         models: [ %Sphere {
             position: %Vector3{ x: 0, y: 0, z: 1000 },
             radius: 250,
             colour: %Colour{ r: 50, g: 50, b: 133 },
+        }, %Sphere {
+            position: %Vector3{ x: 200, y: 200, z: 1000 },
+            radius: 50,
+            colour: %Colour{ r: 255, g: 255, b: 255 },
         }, %Plane {
-            position: %Vector3{x: 0, y: 0, z: 900},
-            angle: %Vector3{x: 0, y: 0, z: 1},
-            colour: %Colour{r: 255, b: 0, g: 255}
-        } ]
+            position: %Vector3{ x: 0, y: 0, z: 1000 },
+            angle: %Vector3{x: -0.5, y: 0, z: 0.5},
+            colour: %Colour{ r: 0, g: 200, b: 200 }
+        }]
     }
-  end
-
-  def create_ray(camera, frame_x, frame_y) do
-    
   end
 
   def find_canvas_point_on_view_port(c_x, c_y, c_w, c_h, v_w, v_h, v_d) do
@@ -64,8 +64,29 @@ defmodule RayTracer do
       nil ->
         nil
     end
-    
+  end
 
+  def find_closest_object(view_port_vector, scene) do
+    camera = scene.camera
+    ray_direction = get_ray_direction(view_port_vector, camera.position)
+
+    results = Enum.map(scene.models, fn(model) ->
+      check(model, camera.position, ray_direction)
+    end)
+    |> Enum.reject(fn(result) -> 
+      result == nil #Remove items that didn't intersect
+    end)
+    |> Enum.concat()
+    
+    if(Enum.count(results) == 0) do
+        Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
+      else
+        
+        closestPoint = Enum.min_by(results, fn (result) -> 
+          result.intersection
+        end)
+        Pixel.new(canvas_x, canvas_y, closestPoint.colour)
+    end
   end
 
   def scan_frame(scene, {canvas_width, canvas_height}) do
@@ -80,29 +101,8 @@ defmodule RayTracer do
             camera.view_height, 
             camera.view_width, 
             camera.view_distance)
-          ray_direction = get_ray_direction(view_port_vector, camera.position)
 
-          results = Enum.map(scene.models, fn(model) ->
-            check(model, camera.position, ray_direction)
-          end)
-          |> Enum.reject(fn(result) -> 
-            result == nil #Remove items that didn't intersect
-          end)
-          |> Enum.concat()
-          
-          if(Enum.count(results) == 0) do
-              Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
-            else
-              if(Enum.count(results) > 1) do
-                IO.inspect results  
-              end
-              
-              closestPoint = Enum.max_by(results, fn (result) -> 
-                result.intersection
-              end)
-              Pixel.new(canvas_x, canvas_y, closestPoint.colour)
-          end
-          
+          closest_object = find_closest_object(view_port_vector, scene)
     end
   end
 

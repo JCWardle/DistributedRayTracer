@@ -11,4 +11,8 @@ defmodule Colour do
     def to_binary(%Colour{} = colour) do
         <<colour.r, colour.g, colour.b>>
     end
+
+    def light_color(%Colour{} = colour, intensity) do
+        new(colour.r * intensity, colour.g * intensity, colour.b * intensity)
+    end
 end
