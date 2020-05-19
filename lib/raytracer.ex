@@ -51,67 +51,72 @@ defmodule RayTracer do
   end
 
   def check(%Plane{} = plane, camera_position, ray_direction) do
-    [%{:intersection => Plane.check_collision(plane, camera_position, ray_direction), 
-      :colour => plane.colour}]
+    check = Plane.check_collision(plane, camera_position, ray_direction)
+    [%{:intersection => check.t, :normal => check.normal, :colour => plane.colour}]
   end
 
   def check(%Sphere{} = sphere, camera_position, ray_direction) do
     case Sphere.check_collision(sphere, camera_position, ray_direction) do
-      {t1, t2} -> [%{:intersection => t1, 
-        :colour => sphere.colour},
-          %{:intersection => t2,
-        :colour => sphere.colour}]
-      nil ->
-        nil
+        {t1, t2} -> [%{:intersection => t1.t, :colour => sphere.colour, :normal => t1.normal},
+                %{:intersection => t2.t, :colour => sphere.colour, :normal => t2.normal}]
+        nil ->
+            nil
     end
   end
 
-  def find_closest_object(view_port_vector, scene) do
-    camera = scene.camera
-    ray_direction = get_ray_direction(view_port_vector, camera.position)
+    def find_closest_object(view_port_vector, scene, ray_direction) do
+        camera = scene.camera
 
-    results = Enum.map(scene.models, fn(model) ->
-      check(model, camera.position, ray_direction)
-    end)
-    |> Enum.reject(fn(result) -> 
-      result == nil #Remove items that didn't intersect
-    end)
-    |> Enum.concat()
-    
-    if(Enum.count(results) == 0) do
-        Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
-      else
-        
-        closestPoint = Enum.min_by(results, fn (result) -> 
-          result.intersection
+        results = Enum.map(scene.models, fn(model) ->
+            check(model, camera.position, ray_direction)
         end)
-        Pixel.new(canvas_x, canvas_y, closestPoint.colour)
+        |> Enum.reject(fn(result) -> 
+            result == nil #Remove items that didn't intersect
+        end)
+        |> Enum.concat()
+
+        if(Enum.count(results) == 0) do
+            nil
+        else
+            Enum.min_by(results, fn (result) -> 
+                result.intersection
+            end)
+        end
     end
-  end
 
-  def scan_frame(scene, {canvas_width, canvas_height}) do
-    for canvas_x <- Kernel.trunc(-canvas_width / 2).. Kernel.trunc(canvas_width / 2),
-        canvas_y <- Kernel.trunc(-canvas_height / 2).. Kernel.trunc(canvas_height / 2) do
-          camera = scene.camera
-          view_port_vector = find_canvas_point_on_view_port(
-            canvas_x, 
-            canvas_y,
-            canvas_width,
-            canvas_height,
-            camera.view_height, 
-            camera.view_width, 
-            camera.view_distance)
+    def scan_frame(scene, {canvas_width, canvas_height}) do
+        for canvas_x <- Kernel.trunc(-canvas_width / 2).. Kernel.trunc(canvas_width / 2),
+            canvas_y <- Kernel.trunc(-canvas_height / 2).. Kernel.trunc(canvas_height / 2) do
+                camera = scene.camera
+                view_port_vector = find_canvas_point_on_view_port(
+                canvas_x, 
+                canvas_y,
+                canvas_width,
+                canvas_height,
+                camera.view_height, 
+                camera.view_width, 
+                camera.view_distance)
 
-          closest_object = find_closest_object(view_port_vector, scene)
+                ray_direction = get_ray_direction(view_port_vector, camera.position)
+
+                case find_closest_object(view_port_vector, scene, ray_direction) do
+                    nil -> 
+                        Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
+                    shape_hit -> 
+                        intersection_point = Vector3.scale(ray_direction, shape_hit.intersection)
+                        lighting = calculate_lighting(scene, intersection_point, intersection.normal)
+                        Pixel.new(canvas_x, canvas_y, shape_hit.colour)
+                end
+
+        end
     end
-  end
 
-  def start(_type, _args) do
-    scene = test_scene()
-    width = 500
-    height = 500
-    frame_pixels = scan_frame(scene, {width, height})
-    IO.inspect frame_pixels
-    Output.write_to_file("output.png", frame_pixels, width, height)
-  end
+    def start(_type, _args) do
+        scene = test_scene()
+        width = 500
+        height = 500
+        frame_pixels = scan_frame(scene, {width, height})
+        IO.inspect frame_pixels
+        Output.write_to_file("output.png", frame_pixels, width, height)
+    end
 end

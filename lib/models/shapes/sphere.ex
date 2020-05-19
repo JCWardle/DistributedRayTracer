@@ -19,7 +19,14 @@ defmodule Sphere do
         else
             t1 = (-k2 + :math.sqrt(discriminant)) / (2 * k1)
             t2 = (-k2 - :math.sqrt(discriminant)) / (2 * k1)
-            {t1, t2}
+            # should this only return the smallest t value? which is the cloest intersection
+            t1_p = Vector3.add(camera_position, Vector3.scale(direction, t1))
+            t1_normal = Vector3.normalize(Vector3.subtract(t1_p, sphere.position))
+
+            t2_p = Vector3.add(camera_position, Vector3.scale(direction, t2))
+            t2_normal = Vector3.normalize(Vector3.subtract(t2_p, sphere.position))
+
+            {%{:t => t1, :normal => t1_normal}, %{:t => t2, :normal => t2_normal}}
         end
     end
 end

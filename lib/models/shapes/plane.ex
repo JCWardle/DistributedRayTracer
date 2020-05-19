@@ -10,7 +10,12 @@ defmodule Plane do
         if(denominator > 0.001) do # This is because it gets closer and closer there might not be a solution
             nominator = Vector3.dot(Vector3.subtract(plane.position, camera_position), plane.angle)
             t = nominator / denominator
-            t
+
+            # Colision position
+            # p = camera_position + Vector3.scale(direction, t)
+            # normal = Vector3.normal(p)
+
+            %{:t => t, :normal => nil}
         else 
             nil
         end
