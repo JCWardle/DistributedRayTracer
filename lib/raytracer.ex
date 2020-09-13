@@ -1,19 +1,6 @@
 defmodule RayTracer do
   use Application
   require Logger
-  @moduledoc """
-  Documentation for RayTracer.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> RayTracer.hello
-      :world
-
-"""
 
   def test_scene() do
     %Scene {
@@ -25,7 +12,7 @@ defmodule RayTracer do
             view_height: 500,
             view_width: 500
         },
-        light: [ %AmbientLight{ intensity: 0.5 } ],
+        lights: [ %AmbientLight{ intensity: 0.5 } ],
         models: [ %Sphere {
             position: %Vector3{ x: 0, y: 0, z: 1000 },
             radius: 250,
@@ -104,8 +91,8 @@ defmodule RayTracer do
                         Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
                     shape_hit -> 
                         intersection_point = Vector3.scale(ray_direction, shape_hit.intersection)
-                        lighting = calculate_lighting(scene, intersection_point, intersection.normal)
-                        Pixel.new(canvas_x, canvas_y, shape_hit.colour)
+                        lighting = Lighting.calculate_lighting(scene, intersection_point)
+                        Pixel.new(canvas_x, canvas_y, Colour.light_color(shape_hit.colour, lighting))
                 end
 
         end

@@ -9,7 +9,7 @@ defmodule Colour do
     end
     
     def to_binary(%Colour{} = colour) do
-        <<colour.r, colour.g, colour.b>>
+        <<trunc(colour.r), trunc(colour.g), trunc(colour.b)>>
     end
 
     def light_color(%Colour{} = colour, intensity) do
