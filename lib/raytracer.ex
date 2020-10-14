@@ -25,6 +25,11 @@ defmodule RayTracer do
             position: %Vector3{ x: 0, y: 0, z: 1000 },
             angle: %Vector3{x: -0.5, y: 0, z: 0.5},
             colour: %Colour{ r: 0, g: 200, b: 200 }
+        },
+        %Plane {
+            position: %Vector3{ x: 0, y: 0, z: 0 },
+            angle: %Vector3{x: -0.1, y: 0, z: 0},
+            colour: %Colour{ r: 0, g: 0, b: 200 }
         }]
     }
   end
@@ -38,8 +43,11 @@ defmodule RayTracer do
   end
 
   def check(%Plane{} = plane, camera_position, ray_direction) do
-    check = Plane.check_collision(plane, camera_position, ray_direction)
-    [%{:intersection => check.t, :normal => check.normal, :colour => plane.colour}]
+    case Plane.check_collision(plane, camera_position, ray_direction) do
+        check -> 
+            [%{:intersection => check.t, :normal => check.normal, :colour => plane.colour}]
+        nil -> nil
+    end
   end
 
   def check(%Sphere{} = sphere, camera_position, ray_direction) do

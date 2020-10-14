@@ -15,8 +15,6 @@ defmodule Output do
         |> Enum.sort()
         |> Enum.reverse()
 
-        IO.inspect rows
-
         Enum.each(rows, fn({row_number, row_pixels}) -> 
             row = Enum.map(row_pixels, fn(pixel) ->
                 Colour.to_binary(pixel.colour)
