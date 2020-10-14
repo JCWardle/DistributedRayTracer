@@ -111,7 +111,6 @@ defmodule RayTracer do
         width = 500
         height = 500
         frame_pixels = scan_frame(scene, {width, height})
-        IO.inspect frame_pixels
         Output.write_to_file("output.png", frame_pixels, width, height)
     end
 end

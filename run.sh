@@ -1,1 +1,0 @@
-docker run -it -v ${PWD}:/app -w /app --rm elixir mix run

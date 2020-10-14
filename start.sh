@@ -1,0 +1,1 @@
+docker run -it -v $PWD:/app -w /app --rm drt mix run
