@@ -3,9 +3,16 @@ defmodule Colour do
                 g: nil,
                 b: nil
     
-    def new(r,g,b) do
-        
-        %Colour{ r: r, g: g, b: b }
+    def new(r,g,b) do    
+        %Colour{ r: limit_color(r), g: limit_color(g), b: limit_color(b) }
+    end
+
+    def limit_color(c) do
+        if(c > 255) do
+            255
+        else
+            trunc(c)
+        end
     end
     
     def to_binary(%Colour{} = colour) do

@@ -21,7 +21,6 @@ defmodule Output do
             end)
             :png.append(png, {:row, row})
         end)
-
         :png.close(png) 
     end
 end

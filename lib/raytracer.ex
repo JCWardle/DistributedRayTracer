@@ -12,7 +12,10 @@ defmodule RayTracer do
             view_height: 500,
             view_width: 500
         },
-        lights: [ %AmbientLight{ intensity: 0.5 } ],
+        lights: [ 
+            %AmbientLight{ intensity: 0.2 },
+            %DirectionalLight{ direction: %Vector3{ x: 0, y: 1, z: 1 }, intensity: 0.5 } 
+        ],
         models: [ %Sphere {
             position: %Vector3{ x: 0, y: 0, z: 1000 },
             radius: 250,
@@ -25,11 +28,6 @@ defmodule RayTracer do
             position: %Vector3{ x: 0, y: 0, z: 1000 },
             angle: %Vector3{x: -0.5, y: 0, z: 0.5},
             colour: %Colour{ r: 0, g: 200, b: 200 }
-        },
-        %Plane {
-            position: %Vector3{ x: 0, y: 0, z: 0 },
-            angle: %Vector3{x: -0.1, y: 0, z: 0},
-            colour: %Colour{ r: 0, g: 0, b: 200 }
         }]
     }
   end
@@ -84,13 +82,13 @@ defmodule RayTracer do
             canvas_y <- Kernel.trunc(-canvas_height / 2).. Kernel.trunc(canvas_height / 2) do
                 camera = scene.camera
                 view_port_vector = find_canvas_point_on_view_port(
-                canvas_x, 
-                canvas_y,
-                canvas_width,
-                canvas_height,
-                camera.view_height, 
-                camera.view_width, 
-                camera.view_distance)
+                    canvas_x, 
+                    canvas_y,
+                    canvas_width,
+                    canvas_height,
+                    camera.view_height, 
+                    camera.view_width, 
+                    camera.view_distance)
 
                 ray_direction = get_ray_direction(view_port_vector, camera.position)
 
@@ -111,6 +109,9 @@ defmodule RayTracer do
         width = 500
         height = 500
         frame_pixels = scan_frame(scene, {width, height})
+
+        IO.inspect frame_pixels
+
         Output.write_to_file("output.png", frame_pixels, width, height)
     end
 end
