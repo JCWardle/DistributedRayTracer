@@ -1,9 +1,9 @@
 defmodule Colour do
-    defstruct   r: nil, 
+    defstruct   r: nil,
                 g: nil,
                 b: nil
-    
-    def new(r,g,b) do    
+
+    def new(r,g,b) do
         %Colour{ r: limit_color(r), g: limit_color(g), b: limit_color(b) }
     end
 
@@ -14,7 +14,7 @@ defmodule Colour do
             trunc(c)
         end
     end
-    
+
     def to_binary(%Colour{} = colour) do
         <<trunc(colour.r), trunc(colour.g), trunc(colour.b)>>
     end

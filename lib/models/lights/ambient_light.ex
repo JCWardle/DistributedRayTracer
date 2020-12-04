@@ -1,7 +1,7 @@
 defmodule AmbientLight do
-    defstruct intensity: 0
+  defstruct intensity: 0
 
-    def new(intensity) do
-        %AmbientLight{intensity: intensity}
-    end
+  def new(intensity) do
+    %AmbientLight{intensity: intensity}
+  end
 end

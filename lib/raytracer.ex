@@ -28,6 +28,10 @@ defmodule RayTracer do
             position: %Vector3{ x: 0, y: 0, z: 1000 },
             angle: %Vector3{x: -0.5, y: 0, z: 0.5},
             colour: %Colour{ r: 0, g: 200, b: 200 }
+        }], %Plane {
+            position: %Vector3{ x: 0, y: 0, z: 1000 },
+            angle: %Vector3{x: -0.5, y: 0, z: 0.5},
+            colour: %Colour{ r: 0, g: 200, b: 200 }
         }]
     }
   end

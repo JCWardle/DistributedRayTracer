@@ -24,3 +24,5 @@ raytracer-*.tar
 
 .vscode
 .formatter.exs
+.elixir_ls
+erlang-solutions_2.0_all.deb

@@ -1,5 +1,5 @@
 defmodule Scene do
-    defstruct   camera: nil,
-                lights: [],
-                models: []
+  defstruct camera: nil,
+            lights: [],
+            models: []
 end
