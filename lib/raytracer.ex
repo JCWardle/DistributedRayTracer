@@ -86,8 +86,11 @@ defmodule RayTracer do
           Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
 
         shape_hit ->
+          intersection_normal = shape_hit.normal
           intersection_point = Vector3.scale(ray_direction, shape_hit.intersection)
-          lighting = Lighting.calculate_lighting(scene, intersection_point)
+
+          lighting = Lighting.calculate_lighting(scene, intersection_normal, intersection_point)
+
           Pixel.new(canvas_x, canvas_y, Colour.light_color(shape_hit.colour, lighting))
       end
     end

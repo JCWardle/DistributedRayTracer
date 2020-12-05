@@ -12,7 +12,8 @@ defmodule TutorialScene do
       },
       lights: [
         %AmbientLight{intensity: 0.2},
-        %DirectionalLight{direction: %Vector3{x: 1, y: 4, z: 4}, intensity: 0.8}
+        %DirectionalLight{direction: %Vector3{x: 1, y: 4, z: 4}, intensity: 0.2},
+        %PointLight{position: %Vector3{x: 2, y: 1, z: 0}, intensity: 0.6}
       ],
       models: [
         %Sphere{
