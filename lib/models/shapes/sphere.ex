@@ -27,7 +27,6 @@ defmodule Sphere do
 
       t2_p = Vector3.add(camera_position, Vector3.scale(direction, t2))
       t2_normal = Vector3.normalize(Vector3.subtract(t2_p, sphere.position))
-
       {%{:t => t1, :normal => t1_normal}, %{:t => t2, :normal => t2_normal}}
     end
   end
