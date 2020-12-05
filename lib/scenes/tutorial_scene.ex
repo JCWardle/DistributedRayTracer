@@ -11,8 +11,8 @@ defmodule TutorialScene do
         view_width: 1
       },
       lights: [
-        %AmbientLight{intensity: 1}
-        # %DirectionalLight{direction: %Vector3{x: 0, y: 1, z: 1}, intensity: 0.5}
+        %AmbientLight{intensity: 0.2},
+        %DirectionalLight{direction: %Vector3{x: 1, y: 4, z: 4}, intensity: 0.8}
       ],
       models: [
         %Sphere{
