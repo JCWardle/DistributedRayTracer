@@ -42,7 +42,15 @@ defmodule RayTracer do
 
     results =
       Enum.map(scene.models, fn model ->
-        check(model, camera.position, ray_direction)
+        check_result = check(model, camera.position, ray_direction)
+
+        if(check_result != nil) do
+          Enum.map(check_result, fn check ->
+            Map.put(check, :shape, model)
+          end)
+        else
+          nil
+        end
       end)
       |> Enum.reject(fn result ->
         # remove items that didn't intersect
@@ -88,8 +96,16 @@ defmodule RayTracer do
         shape_hit ->
           intersection_normal = shape_hit.normal
           intersection_point = Vector3.scale(ray_direction, shape_hit.intersection)
+          view = Vector3.scale(ray_direction, -1)
 
-          lighting = Lighting.calculate_lighting(scene, intersection_normal, intersection_point)
+          lighting =
+            Lighting.calculate_lighting(
+              scene,
+              intersection_normal,
+              intersection_point,
+              view,
+              shape_hit.shape
+            )
 
           Pixel.new(canvas_x, canvas_y, Colour.light_color(shape_hit.colour, lighting))
       end
@@ -98,8 +114,8 @@ defmodule RayTracer do
 
   def start(_type, _args) do
     scene = test_scene()
-    width = 500
-    height = 500
+    width = 600
+    height = 600
     frame_pixels = scan_frame(scene, {width, height})
 
     Output.write_to_file("output.png", frame_pixels, width, height)

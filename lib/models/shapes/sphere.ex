@@ -2,7 +2,8 @@ defmodule Sphere do
   defstruct radius: nil,
             # The center of the sphere
             position: nil,
-            colour: nil
+            colour: nil,
+            material: nil
 
   # https://www.gabrielgambetta.com/computer-graphics-from-scratch/basic-ray-tracing.html
   def check_collision(%Sphere{} = sphere, %Vector3{} = camera_position, %Vector3{} = direction) do
