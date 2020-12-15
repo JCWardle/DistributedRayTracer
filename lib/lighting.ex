@@ -1,5 +1,5 @@
 defmodule Lighting do
-  @epsilon 1.0e-15
+  @epsilon 0.001
 
   defp calculate_light_intensity(
          %AmbientLight{} = light,
@@ -81,11 +81,7 @@ defmodule Lighting do
   end
 
   defp in_shadow(intersection_point, lighting_vector, shadow_function, t_max) do
-    ray =
-      Vector3.subtract(lighting_vector, intersection_point)
-      |> Vector3.scale(-1)
-
-    case shadow_function.(intersection_point, ray, @epsilon, t_max) do
+    case shadow_function.(intersection_point, lighting_vector, 0.001, t_max) do
       nil -> false
       _ -> true
     end

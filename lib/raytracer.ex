@@ -126,7 +126,9 @@ defmodule RayTracer do
     scene = test_scene()
     width = 600
     height = 600
+
     {frame_time, frame_pixels} = :timer.tc(fn -> scan_frame(scene, {width, height}) end)
+
     IO.puts("Took #{frame_time / 1_000_000} seconds to generate the scene")
 
     {write_time, _} =
