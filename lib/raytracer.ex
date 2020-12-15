@@ -37,7 +37,7 @@ defmodule RayTracer do
     end
   end
 
-  def find_closest_object(scene, ray_direction) do
+  def find_closest_object(scene, ray_direction, t_min, t_max) do
     camera = scene.camera
 
     results =
@@ -59,7 +59,7 @@ defmodule RayTracer do
       |> Enum.concat()
       |> Enum.reject(fn result ->
         # remove items behind the camera TODO update with direction
-        result.intersection < 1
+        result.intersection < t_min || result.intersection > t_max
       end)
 
     if(Enum.count(results) == 0) do
@@ -68,6 +68,12 @@ defmodule RayTracer do
       Enum.min_by(results, fn result ->
         result.intersection
       end)
+    end
+  end
+
+  def shadow_function_collision(scene) do
+    fn ray_direction, t_min, t_max ->
+      find_closest_object(scene, ray_direction, t_min, t_max)
     end
   end
 
@@ -89,7 +95,7 @@ defmodule RayTracer do
 
       ray_direction = get_ray_direction(view_port_vector, camera.position)
 
-      case find_closest_object(scene, ray_direction) do
+      case find_closest_object(scene, ray_direction, 1, :infinity) do
         nil ->
           Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
 
@@ -104,7 +110,8 @@ defmodule RayTracer do
               intersection_normal,
               intersection_point,
               view,
-              shape_hit.shape
+              shape_hit.shape,
+              shadow_function_collision(scene)
             )
 
           Pixel.new(canvas_x, canvas_y, Colour.light_color(shape_hit.colour, lighting))
@@ -116,8 +123,13 @@ defmodule RayTracer do
     scene = test_scene()
     width = 600
     height = 600
-    frame_pixels = scan_frame(scene, {width, height})
+    {frame_time, frame_pixels} = :timer.tc(fn -> scan_frame(scene, {width, height}) end)
+    IO.puts("Took #{frame_time / 1_000_000} seconds to generate the scene")
 
-    Output.write_to_file("output.png", frame_pixels, width, height)
+    {write_time, _} =
+      :timer.tc(fn -> Output.write_to_file("output.png", frame_pixels, width, height) end)
+
+    IO.puts("Took #{write_time / 1_000_000} seconds to write the output")
+    IO.puts("Total time #{(write_time + frame_time) / 1_000_000}")
   end
 end

@@ -1,10 +1,13 @@
 defmodule Lighting do
+  @epsilon 1.0e-15
+
   defp calculate_light_intensity(
          %AmbientLight{} = light,
          _intersection_normal,
          _intersection_point,
          _ray,
-         _shape
+         _shape,
+         _shadow_function
        ) do
     light.intensity
   end
@@ -12,16 +15,21 @@ defmodule Lighting do
   defp calculate_light_intensity(
          %DirectionalLight{} = light,
          intersection_normal,
-         _intersection_point,
+         intersection_point,
          ray,
-         shape
+         shape,
+         shadow_function
        ) do
     calculate_directional_light(
       light.direction,
       light.intensity,
       intersection_normal,
+      intersection_point,
       ray,
-      shape.material.specular
+      shape.material.specular,
+      shadow_function,
+      # Directional light goes forever
+      :infinite
     )
   end
 
@@ -30,7 +38,8 @@ defmodule Lighting do
          intersection_normal,
          intersection_point,
          ray,
-         shape
+         shape,
+         shadow_function
        ) do
     light_vector = Vector3.subtract(light.position, intersection_point)
 
@@ -38,8 +47,12 @@ defmodule Lighting do
       light_vector,
       light.intensity,
       intersection_normal,
+      intersection_point,
       ray,
-      shape.material.specular
+      shape.material.specular,
+      shadow_function,
+      # Only goes in 1 direction
+      1
     )
   end
 
@@ -47,11 +60,33 @@ defmodule Lighting do
          %Vector3{} = lighting_vector,
          intensity,
          intersection_normal,
+         intersection_point,
          ray,
-         shininess
+         shininess,
+         shadow_function,
+         t_max
        ) do
-    calculate_diffuse_lighting(lighting_vector, intensity, intersection_normal) +
-      calculate_specular_lighting(lighting_vector, intersection_normal, ray, intensity, shininess)
+    if in_shadow(intersection_point, lighting_vector, shadow_function, t_max) do
+      0
+    else
+      calculate_diffuse_lighting(lighting_vector, intensity, intersection_normal) +
+        calculate_specular_lighting(
+          lighting_vector,
+          intersection_normal,
+          ray,
+          intensity,
+          shininess
+        )
+    end
+  end
+
+  defp in_shadow(intersection_point, lighting_vector, shadow_function, t_max) do
+    ray = Vector3.subtract(intersection_point, lighting_vector)
+
+    case shadow_function.(ray, t_max, @epsilon) do
+      nil -> false
+      _ -> true
+    end
   end
 
   defp calculate_diffuse_lighting(%Vector3{} = lighting_vector, intensity, intersection_normal) do
@@ -91,9 +126,24 @@ defmodule Lighting do
     end
   end
 
-  def calculate_lighting(scene, intersection_normal, intersection_point, ray, shape) do
+  def calculate_lighting(
+        scene,
+        intersection_normal,
+        intersection_point,
+        ray,
+        shape,
+        shadow_function
+      ) do
     Enum.reduce(scene.lights, 0, fn light, acc ->
-      acc + calculate_light_intensity(light, intersection_normal, intersection_point, ray, shape)
+      acc +
+        calculate_light_intensity(
+          light,
+          intersection_normal,
+          intersection_point,
+          ray,
+          shape,
+          shadow_function
+        )
     end)
   end
 end
