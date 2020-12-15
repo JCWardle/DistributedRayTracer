@@ -1,4 +1,4 @@
-defmodule Shiny do
+defmodule DefaultMaterial do
   # not shiny higher is shinier
   defstruct specular: 0
 end
