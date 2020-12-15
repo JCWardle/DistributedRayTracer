@@ -7,7 +7,7 @@ defmodule RayTracer do
   end
 
   def find_canvas_point_on_view_port(c_x, c_y, c_w, c_h, v_w, v_h, v_d) do
-    Vector3.new(c_x * (v_w / c_w), c_y * (v_w / c_h), v_d)
+    Vector3.new(c_x * (v_w / c_w), c_y * (v_h / c_h), v_d)
   end
 
   def get_ray_direction(%Vector3{} = view_point, camera_position) do
@@ -38,8 +38,6 @@ defmodule RayTracer do
   end
 
   def find_closest_object(scene, origin, ray_direction, t_min, t_max) do
-    camera = scene.camera
-
     results =
       Enum.map(scene.models, fn model ->
         check_result = check(model, origin, ray_direction)
@@ -77,7 +75,7 @@ defmodule RayTracer do
     end
   end
 
-  def trace_ray(scene, ray_direction) do
+  def trace_ray(scene, ray_direction, depth) do
     case find_closest_object(scene, scene.camera.position, ray_direction, 1, :infinity) do
       nil ->
         scene.camera.background_color
@@ -97,7 +95,20 @@ defmodule RayTracer do
             shadow_function_collision(scene)
           )
 
-        Colour.light_color(shape_hit.colour, lighting)
+        local_color = Colour.light_color(shape_hit.colour, lighting)
+
+        if depth == 0 do
+          local_color
+        else
+          reflected_ray = Vector3.reflect_ray(view, intersection_normal)
+          reflected_color = trace_ray(scene, reflected_ray, depth - 1)
+          reflective = shape_hit.shape.material.reflective
+
+          Colour.add(
+            Colour.light_color(local_color, 1 - reflective),
+            Colour.light_color(reflected_color, reflective)
+          )
+        end
     end
   end
 
@@ -118,7 +129,7 @@ defmodule RayTracer do
         )
 
       ray_direction = get_ray_direction(view_port_vector, camera.position)
-      Pixel.new(canvas_x, canvas_y, trace_ray(scene, ray_direction))
+      Pixel.new(canvas_x, canvas_y, trace_ray(scene, ray_direction, 3))
     end
   end
 

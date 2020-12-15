@@ -81,7 +81,7 @@ defmodule Lighting do
   end
 
   defp in_shadow(intersection_point, lighting_vector, shadow_function, t_max) do
-    case shadow_function.(intersection_point, lighting_vector, 0.001, t_max) do
+    case shadow_function.(intersection_point, lighting_vector, @epsilon, t_max) do
       nil -> false
       _ -> true
     end
@@ -105,9 +105,7 @@ defmodule Lighting do
          light_intensity,
          shiny
        ) do
-    reflection_direction =
-      Vector3.scale(intersection_normal, 2 * Vector3.dot(intersection_normal, lighting_vector))
-      |> Vector3.subtract(lighting_vector)
+    reflection_direction = Vector3.reflect_ray(intersection_normal, lighting_vector)
 
     reflection_dot_view = Vector3.dot(reflection_direction, ray)
 

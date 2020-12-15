@@ -42,4 +42,9 @@ defmodule Vector3 do
   def dot(a, b) do
     a.x * b.x + a.y * b.y + a.z * b.z
   end
+
+  def reflect_ray(a, b) do
+    Vector3.scale(a, 2 * Vector3.dot(a, b))
+    |> Vector3.subtract(b)
+  end
 end
