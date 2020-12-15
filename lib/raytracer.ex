@@ -37,12 +37,12 @@ defmodule RayTracer do
     end
   end
 
-  def find_closest_object(scene, ray_direction, t_min, t_max) do
+  def find_closest_object(scene, origin, ray_direction, t_min, t_max) do
     camera = scene.camera
 
     results =
       Enum.map(scene.models, fn model ->
-        check_result = check(model, camera.position, ray_direction)
+        check_result = check(model, origin, ray_direction)
 
         if(check_result != nil) do
           Enum.map(check_result, fn check ->
@@ -72,8 +72,8 @@ defmodule RayTracer do
   end
 
   def shadow_function_collision(scene) do
-    fn ray_direction, t_min, t_max ->
-      find_closest_object(scene, ray_direction, t_min, t_max)
+    fn origin, ray_direction, t_min, t_max ->
+      find_closest_object(scene, origin, ray_direction, t_min, t_max)
     end
   end
 
@@ -95,7 +95,7 @@ defmodule RayTracer do
 
       ray_direction = get_ray_direction(view_port_vector, camera.position)
 
-      case find_closest_object(scene, ray_direction, 1, :infinity) do
+      case find_closest_object(scene, scene.camera.position, ray_direction, 1, :infinity) do
         nil ->
           Pixel.new(canvas_x, canvas_y, scene.camera.background_color)
 
