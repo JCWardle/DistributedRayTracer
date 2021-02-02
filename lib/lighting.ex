@@ -105,7 +105,7 @@ defmodule Lighting do
          light_intensity,
          shiny
        ) do
-    reflection_direction = Vector3.reflect_ray(intersection_normal, lighting_vector)
+    reflection_direction = Vector3.reflect_ray(lighting_vector, intersection_normal)
 
     reflection_dot_view = Vector3.dot(reflection_direction, ray)
 

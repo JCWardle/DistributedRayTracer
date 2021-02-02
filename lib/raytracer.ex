@@ -76,7 +76,7 @@ defmodule RayTracer do
   end
 
   def trace_ray(scene, ray_direction, depth) do
-    case find_closest_object(scene, scene.camera.position, ray_direction, 1, :infinity) do
+    case find_closest_object(scene, scene.camera.position, ray_direction, 0.001, :infinity) do
       nil ->
         scene.camera.background_color
 
@@ -97,10 +97,11 @@ defmodule RayTracer do
 
         local_color = Colour.light_color(shape_hit.colour, lighting)
 
-        if depth == 0 do
+        if depth <= 0 || shape_hit.shape.material.reflective <= 0 do
           local_color
         else
           reflected_ray = Vector3.reflect_ray(view, intersection_normal)
+
           reflected_color = trace_ray(scene, reflected_ray, depth - 1)
           reflective = shape_hit.shape.material.reflective
 

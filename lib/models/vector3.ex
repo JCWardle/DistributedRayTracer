@@ -1,6 +1,4 @@
 defmodule Vector3 do
-  import Math
-
   defstruct x: nil,
             y: nil,
             z: nil
@@ -43,8 +41,10 @@ defmodule Vector3 do
     a.x * b.x + a.y * b.y + a.z * b.z
   end
 
-  def reflect_ray(a, b) do
-    Vector3.scale(a, 2 * Vector3.dot(a, b))
-    |> Vector3.subtract(b)
+  def reflect_ray(v1, v2) do
+    Vector3.subtract(
+      Vector3.scale(v2, 2 * Vector3.dot(v1, v2)),
+      v1
+    )
   end
 end
