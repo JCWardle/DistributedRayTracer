@@ -39,6 +39,12 @@ defmodule TutorialScene do
           radius: 5000,
           colour: %Colour{r: 255, g: 255, b: 0},
           material: %DefaultMaterial{specular: 1000, reflective: 0.5}
+        },
+        %Sphere{
+          position: %Vector3{x: 0, y: 5, z: 50},
+          radius: 4,
+          colour: %Colour{r: 255, g: 192, b: 203},
+          material: %DefaultMaterial{specular: 1000, reflective: 0}
         }
       ]
     }

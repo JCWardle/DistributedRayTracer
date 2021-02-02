@@ -56,7 +56,6 @@ defmodule RayTracer do
       end)
       |> Enum.concat()
       |> Enum.reject(fn result ->
-        # remove items behind the camera TODO update with direction
         result.intersection < t_min || result.intersection > t_max
       end)
 
@@ -75,8 +74,8 @@ defmodule RayTracer do
     end
   end
 
-  def trace_ray(scene, ray_direction, depth) do
-    case find_closest_object(scene, scene.camera.position, ray_direction, 0.001, :infinity) do
+  def trace_ray(scene, origin_point, ray_direction, depth) do
+    case find_closest_object(scene, origin_point, ray_direction, 0.001, :infinity) do
       nil ->
         scene.camera.background_color
 
@@ -102,7 +101,7 @@ defmodule RayTracer do
         else
           reflected_ray = Vector3.reflect_ray(view, intersection_normal)
 
-          reflected_color = trace_ray(scene, reflected_ray, depth - 1)
+          reflected_color = trace_ray(scene, intersection_point, reflected_ray, depth - 1)
           reflective = shape_hit.shape.material.reflective
 
           Colour.add(
@@ -130,14 +129,14 @@ defmodule RayTracer do
         )
 
       ray_direction = get_ray_direction(view_port_vector, camera.position)
-      Pixel.new(canvas_x, canvas_y, trace_ray(scene, ray_direction, 3))
+      Pixel.new(canvas_x, canvas_y, trace_ray(scene, scene.camera.position, ray_direction, 3))
     end
   end
 
   def start(_type, _args) do
     scene = test_scene()
-    width = 600
-    height = 600
+    width = 1000
+    height = 1000
 
     {frame_time, frame_pixels} = :timer.tc(fn -> scan_frame(scene, {width, height}) end)
 
